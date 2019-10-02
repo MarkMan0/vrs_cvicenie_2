@@ -24,32 +24,36 @@
 
 int main(void)
 {
-  /*Enables clock for GPIO port B*/
+  /*Enables clock for GPIO port B*/	//RCC register
   *((volatile uint32_t *) (uint32_t)(0x40021000 + 0x00000014U)) |= (uint32_t)(1 << 18);
-
+  *((volatile uint32_t *) (uint32_t)(0x40021000 + 0x00000014U)) |= (uint32_t)(1 << 17);
   /*GPIOB pin 3 and 6 setup*/
   /*GPIO MODER register, reset*/
   *((volatile uint32_t *)((uint32_t)0x48000400)) = 0;
+
+  //PORT A:
+  //*((volatile uint32_t *)((uint32_t)0x48000000)) = 0;
+
   //Set mode for pin 3 and 6
-  *((volatile uint32_t *)((uint32_t)0x48000400)) |= (uint32_t)(0x1 << 6);
-  *((volatile uint32_t *)((uint32_t)0x48000400)) |= (uint32_t)(0x0 << 0);
+  *((volatile uint32_t *)((uint32_t)0x48000400)) |= (uint32_t)(0x1 << 6);	//	pin	3 - output
+  *((volatile uint32_t *)((uint32_t)0x48000000)) |= (uint32_t)(0x0 << 0);	//	all input
 
   /*GPIO OTYPER register, reset*/
-  *((volatile uint32_t *)((uint32_t)(0x48000400 + 0x04U))) = 0;
+  *((volatile uint32_t *)((uint32_t)(0x48000000 + 0x04U))) = 0;
 
   /*GPIO OSPEEDR register, reset*/
-  *((volatile uint32_t *)((uint32_t)(0x48000400 + 0x08U))) = 0;
+  *((volatile uint32_t *)((uint32_t)(0x48000000 + 0x08U))) = 0;
   //Set Low speed for GPIOB pin 3
-  *((volatile uint32_t *)((uint32_t)(0x48000400 + 0x08U))) &= ~(0x3 << 6);
+  *((volatile uint32_t *)((uint32_t)(0x48000400 + 0x08U))) &= ~(0x3 << 6);	//pin3 manip
 
   /*GPIO PUPDR register, reset*/
-  *((volatile uint32_t *)((uint32_t)(0x48000400 + 0x0CU))) = 0;
-  *((volatile uint32_t *)((uint32_t)(0x48000400 + 0x0CU))) = (1 << 12);
+  *((volatile uint32_t *)((uint32_t)(0x48000000 + 0x0CU))) = 0;
+  *((volatile uint32_t *)((uint32_t)(0x48000000 + 0x0CU))) = (1 << 6);		//A_3 pullup
 
   while (1)
   {
 	  //GPIO IDR, read input from pin 6
-	  if(!(*((volatile uint32_t *)((uint32_t)(0x48000400 + 0x10U))) & (1 << 6)))
+	  if(!(*((volatile uint32_t *)((uint32_t)(0x48000400 + 0x10U))) & (1 << 3)))
 	  {
 		  //GPIO BSRR register, set output pin 3
 		  LED_ON;
